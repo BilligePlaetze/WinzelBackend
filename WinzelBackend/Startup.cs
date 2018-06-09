@@ -11,6 +11,10 @@ using Microsoft.Extensions.Options;
 
 namespace WinzelBackend
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using WinzelBackend.Models;
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -23,6 +27,7 @@ namespace WinzelBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<WinzelContext>(opt => opt.UseInMemoryDatabase("winzels"));
             services.AddMvc();
         }
 
@@ -31,7 +36,7 @@ namespace WinzelBackend
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                
             }
 
             app.UseMvc();
