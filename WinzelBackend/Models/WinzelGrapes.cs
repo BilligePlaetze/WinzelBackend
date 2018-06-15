@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace WinzelBackend.Models
 {
-    public class WinzelTextContent
+    public class WinzelGrapes
     {
         public long Id { get; set; }
-        public string Content { get; set; }
+        public string Gab { get; set; }
     }
 }

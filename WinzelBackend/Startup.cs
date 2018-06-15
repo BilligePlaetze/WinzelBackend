@@ -14,6 +14,7 @@ namespace WinzelBackend
     using Microsoft.EntityFrameworkCore;
 
     using WinzelBackend.Models;
+    using WinzelBackend.Utilites;
 
     public class Startup
     {
@@ -29,17 +30,25 @@ namespace WinzelBackend
         {
             services.AddDbContext<WinzelContext>(opt => opt.UseInMemoryDatabase("winzels"));
             services.AddMvc();
+            services.AddCors(
+                o => o.AddPolicy(
+                    "MyPolicy",
+                    builder =>
+                        {
+                            builder.AllowAnyOrigin();
+                            builder.AllowAnyHeader();
+                            builder.AllowAnyMethod();
+                        }));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                
-            }
-
+            
+            app.UseCors("MyPolicy");
             app.UseMvc();
+           
         }
     }
 }

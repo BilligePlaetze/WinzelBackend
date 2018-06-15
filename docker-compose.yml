@@ -5,4 +5,4 @@ services:
     image: ${DOCKER_REGISTRY}winzelbackend
     build:
       context: .
-      dockerfile: WinzelBackend\Dockerfile
+      dockerfile: WinzelBackend/Dockerfile

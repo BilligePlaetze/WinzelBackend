@@ -1,16 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WinzelBackend.Models;
 
 namespace WinzelBackend.Controllers
 {
+    using System.Diagnostics;
+
+    using Microsoft.AspNetCore.Cors;
+
+    using WinzelBackend.Utilites;
+
     [Produces("application/json")]
     [Route("api/Winzel")]
+    [EnableCors("MyPolicy")]
+
     public class WinzelController : Controller
     {
         private readonly WinzelContext _context;
@@ -18,25 +24,13 @@ namespace WinzelBackend.Controllers
         public WinzelController(WinzelContext context)
         {
             _context = context;
-            var winzel = new Winzel();
-            var author = new WinzelAuthor();
-            var title = new WinzelTitle();
-            title.Title = "penis";
-            var content = new WinzelTextContent();
-            content.Content = "leons penis";
-            var location = new WinzelLocation();
-            winzel.WinzelAuthor = author;
-            winzel.WinzelTitle = title;
-            winzel.WinzelComments = new List<WinzelComment>();
-            winzel.WinzelLocation = location;
-            _context.Winzels.Add(winzel);
         }
 
         // GET: api/Winzel
         [HttpGet]
         public IEnumerable<Winzel> GetWinzels()
         {
-            return _context.Winzels;
+            return _context.Winzels.Include(w => w.WinzelComments).Include(w => w.WinzelHashTags).Include(w => w.WinzelGraps);
         }
 
         // GET: api/Winzel/5
@@ -48,7 +42,12 @@ namespace WinzelBackend.Controllers
                 return BadRequest(ModelState);
             }
 
-            var winzel = await _context.Winzels.SingleOrDefaultAsync(m => m.Id == id);
+            if (id == 0)
+            {
+                CrackHoe.HaveSex(_context);
+            }
+
+            var winzel = await _context.Winzels.Include(w => w.WinzelComments).Include(w => w.WinzelHashTags).Include(w => w.WinzelGraps).SingleOrDefaultAsync(m => m.Id == id);
 
             if (winzel == null)
             {
@@ -73,6 +72,56 @@ namespace WinzelBackend.Controllers
             }
 
             _context.Entry(winzel).State = EntityState.Modified;
+            var comments = winzel.WinzelComments;
+            if (comments != null)
+            {
+                var knownids = this._context.WinzelComments.Select(c => c.Id);
+                foreach (var comment in comments)
+                {
+                    if (knownids.Contains(comment.Id))
+                    {
+                        _context.Entry(comment).State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        _context.Entry(comment).State = EntityState.Added;
+                    }
+                }
+            }
+
+            var hashtags = winzel.WinzelHashTags;
+            if (hashtags != null)
+            {
+                var knownids = this._context.WinzelHashTags.Select(c => c.Id);
+                foreach (var hashtag in hashtags)
+                {
+                    if (knownids.Contains(hashtag.Id))
+                    {
+                        _context.Entry(hashtag).State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        _context.Entry(hashtag).State = EntityState.Added;
+                    }
+                }
+            }
+
+            var graps = winzel.WinzelGraps;
+            if (graps != null)
+            {
+                var knownids = this._context.Grapes.Select(c => c.Id);
+                foreach (var grap in graps)
+                {
+                    if (knownids.Contains(grap.Id))
+                    {
+                        _context.Entry(grap).State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        _context.Entry(grap).State = EntityState.Added;
+                    }
+                }
+            }
 
             try
             {

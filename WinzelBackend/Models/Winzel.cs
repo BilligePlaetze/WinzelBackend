@@ -14,10 +14,15 @@ namespace WinzelBackend.Models
     public class Winzel
     {
         public long Id { get; set; }
-        public WinzelTitle WinzelTitle { get; set; }
-        public WinzelAuthor WinzelAuthor { get; set; }
-        public WinzelLocation WinzelLocation { get; set; }
-        public List<WinzelTextContent> WinzelContents { get; set; }
-        public List<WinzelComment> WinzelComments { get; set; }
+        public string WinzelTitle { get; set; }
+        public string WinzelText { get; set; }
+        public string WinzelLocation { get; set; }
+        public ICollection<WinzelGrapes> WinzelGraps { get; set; }
+        public ICollection<WinzelHashTag> WinzelHashTags { get; set; }
+        public int WinzelUpvotes { get; set; }
+        public string WinzelDate { get; set; }
+        public string WinzelAuthor { get; set; }
+        public ICollection<WinzelComment> WinzelComments { get; set; }
+        public string WinzelImage { get; set; }
     }
 }
